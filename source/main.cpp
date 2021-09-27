@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <string.h>
+#include <dirent.h>
 #include "edn.h"
-
+/*
 const char* myName(); 
+*/
+void imprimirDirectorio(char *d);
 
-const char* listaDeNotas();
+int listaDeNotas(char *d);
 
 void imprimirNota(char nombre_nota[20]);
 
@@ -15,25 +18,22 @@ int main(){
     printf("\t2. Borrar una nota.\n");
 
     int opcion; scanf("%d", &opcion);
-    printf("%s -", listaDeNotas());
-/*
+
     switch (opcion)
     {
-    case 1:{
+        case 1:
+        {
+            imprimirDirectorio("./notas");
+            break;
+        }
 
-        //printf("%c --- \n\n", listaDeNotas());
-        
-        //strcat("./notas/nota", listaDeNotas());
-        break;
+        default:
+        {
+            printf("Opción invalida.");
+            break;
+        }
     }
 
-    default:{
-
-
-        break;
-    }
-    }
-*/
     //imprimirNota("./notas/nota1.md");
 
     return 0;
@@ -49,7 +49,7 @@ void imprimirNota(char nombre_nota[20]){
     {
         printf("error.\n");
     }
-
+    
     while ((caracter = fgetc(nota1)) != EOF)
     {
         printf("%c", caracter);
@@ -60,20 +60,34 @@ void imprimirNota(char nombre_nota[20]){
 
 
 
-const char* listaDeNotas(){
+int listaDeNotas(char *d){
     printf("Selecciona una de las notas disponibles:\n\n");
-    printf("\t1. nota1.md\n");
-    printf("\t2. nota2.md\n");
-    printf("\t3. nota3.md\n");
-    printf("\t4. nota4.md\n");
-    printf("\t5. nota5.md\n");
-    char opcion[2]; 
-    scanf("%s", opcion);
+    imprimirDirectorio(d);
+    int opcion; 
+    scanf("%d", &opcion);
     return opcion;
 }
 
+void imprimirDirectorio(char *d){
+    struct dirent *files;
+    DIR* dir_notas = opendir(d);
+    if (dir_notas == NULL){
+        printf("Error al abrir el directorio." );
+    }
+    int contador = 0;
+    char nombre_archivo[40];
+    while ((files = readdir(dir_notas)) != NULL){
+        
+        strcpy(nombre_archivo, files->d_name);
+        contador++;
+        printf("\t%d. %s - %d\n", contador, nombre_archivo, (int)strlen(nombre_archivo));
+    }
+    closedir(dir_notas);    
+}
 
+/*
 const char* myName() {
   char *name = "Flavio";
   return name;
 }
+*/

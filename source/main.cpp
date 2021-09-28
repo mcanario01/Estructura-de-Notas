@@ -5,11 +5,12 @@
 /*
 const char* myName(); 
 */
-void imprimirDirectorio(char *d);
+const char *imprimirDirectorio(char *directorio, int opcion);
 
-int listaDeNotas(char *d);
+int seleccionNotas(char *directorio);
 
-void imprimirNota(char nombre_nota[20]);
+void imprimirNota(char *nombre_nota);
+
 
 int main(){
     
@@ -23,7 +24,14 @@ int main(){
     {
         case 1:
         {
-            imprimirDirectorio("./notas");
+            int seleccion = seleccionNotas("./notas");
+            char nota[50];/*
+            const char *nombre_nota_actual = imprimirDirectorio("./notas", seleccion);
+            strcpy(nota, nombre_nota_actual);
+            char aux[50];
+            strcat(aux,"./notas/");
+            strcat(aux,nota);
+            imprimirNota(aux);*/
             break;
         }
 
@@ -39,7 +47,7 @@ int main(){
     return 0;
 }
 
-void imprimirNota(char nombre_nota[20]){
+void imprimirNota(char *nombre_nota){
     
     FILE* nota1 = fopen(nombre_nota, "r");
     
@@ -60,30 +68,50 @@ void imprimirNota(char nombre_nota[20]){
 
 
 
-int listaDeNotas(char *d){
+int seleccionNotas(char *directorio){
     printf("Selecciona una de las notas disponibles:\n\n");
-    imprimirDirectorio(d);
+    imprimirDirectorio(directorio, 0);
     int opcion; 
     scanf("%d", &opcion);
     return opcion;
 }
 
-void imprimirDirectorio(char *d){
+
+const char *imprimirDirectorio(char *directorio, int opcion){
     struct dirent *files;
-    DIR* dir_notas = opendir(d);
+    DIR* dir_notas = opendir(directorio);
     if (dir_notas == NULL){
         printf("Error al abrir el directorio." );
     }
     int contador = 0;
     char nombre_archivo[40];
     while ((files = readdir(dir_notas)) != NULL){
-        
+
         strcpy(nombre_archivo, files->d_name);
-        contador++;
-        printf("\t%d. %s - %d\n", contador, nombre_archivo, (int)strlen(nombre_archivo));
+
+        if (strcmp(nombre_archivo, ".") == 0 || strcmp(nombre_archivo, "..") == 0){
+            continue;
+        }
+        else{
+            contador++;
+            if (opcion == 0)
+            {
+                continue;
+                printf("\t%d. %s\n", contador, nombre_archivo);
+            }
+            if ((opcion == contador) && (opcion != 0))
+            {
+                return nombre_archivo;
+            }
+                      
+        }
+        
     }
-    closedir(dir_notas);    
+    closedir(dir_notas);
+
+    return 0;
 }
+
 
 /*
 const char* myName() {
